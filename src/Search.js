@@ -96,7 +96,7 @@ export function Search() {
                 {imageSearchResults.map((image) => {
                     return (
                         <ImageSearchResult
-                            key={image.url}
+                            key={image.id}
                             src={image.url}
                             alt={image.altDescription}
                             onClick={() => handleOnClick(image.id)}
@@ -116,7 +116,7 @@ export function Search() {
                             <div className="flex flex-row items-center gap-4 leading-tight mb-4">
                                 <img
                                     src={currentOpenImage.profileImage}
-                                    alt={`profile photo of ${currentOpenImage.authorUsername}`}
+                                    alt={currentOpenImage.authorUsername}
                                     className="border border-gray-200 rounded-full"
                                 />
 

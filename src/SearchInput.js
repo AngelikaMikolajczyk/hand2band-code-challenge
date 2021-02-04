@@ -7,12 +7,12 @@ import 'react-autocomplete-input/dist/bundle.css';
 import axios from 'axios';
 import './SearchInput.css';
 
+const proxy = `https://api.allorigins.win/raw?url=`;
+
 export function SearchInput({ initialInputValue = '' }) {
     const [inputOptions, setInputOptions] = React.useState([]);
 
     const [inputValue, setInputValue] = React.useState(initialInputValue);
-
-    const proxy = `https://api.allorigins.win/raw?url=`;
 
     const history = useHistory();
 
