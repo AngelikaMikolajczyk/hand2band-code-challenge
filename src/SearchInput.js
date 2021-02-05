@@ -40,8 +40,8 @@ export function SearchInput({ initialInputValue = '' }) {
                     });
                     setInputOptions(newInputOptions);
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(() => {
+                    setInputOptions([]);
                 });
         }
     }, [inputValue]);

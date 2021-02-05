@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faFrown } from '@fortawesome/free-solid-svg-icons';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
 function ImageSearchResult({ src, alt, onClick, tags }) {
@@ -37,6 +39,8 @@ export function Search() {
 
     const [placeOfMakedPhoto, setPlaceOfMakedPhoto] = React.useState('');
 
+    const [photosSearchStatus, setPhotosSearchStatus] = React.useState('');
+
     function handleOnClick(id) {
         setCurrentOpenImageId(id);
         axios
@@ -44,19 +48,21 @@ export function Search() {
             .then((response) => {
                 setPlaceOfMakedPhoto(response.data.location.name);
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                setPlaceOfMakedPhoto('');
             });
     }
 
     function closeModal() {
         setCurrentOpenImageId('');
+        setPlaceOfMakedPhoto('');
     }
 
     React.useEffect(() => {
         axios
             .get(`https://api.unsplash.com/search/photos?query=${query}`, axiosConfig)
             .then((response) => {
+                setPhotosSearchStatus('fulfilled');
                 const newImageSearchResults = response.data.results.map((imageInfo) => {
                     return {
                         id: imageInfo.id,
@@ -70,8 +76,8 @@ export function Search() {
                 });
                 setImageSearchResults(newImageSearchResults);
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                setPhotosSearchStatus('rejected');
             });
     }, [query]);
 
@@ -92,19 +98,34 @@ export function Search() {
                 <div>back</div>
             </Link>
             <h1 className="text-green-700 text-5xl p-4 mb-6 font-bold">{query}</h1>
-            <div className="grid lg:grid-cols-3 grid-cols-1 gap-8">
-                {imageSearchResults.map((image) => {
-                    return (
-                        <ImageSearchResult
-                            key={image.id}
-                            src={image.url}
-                            alt={image.altDescription}
-                            onClick={() => handleOnClick(image.id)}
-                            tags={image.tags}
-                        />
-                    );
-                })}
-            </div>
+            {photosSearchStatus === 'fulfilled' && imageSearchResults.length > 0 ? (
+                <div className="grid lg:grid-cols-3 grid-cols-1 gap-8">
+                    {imageSearchResults.map((image) => {
+                        return (
+                            <ImageSearchResult
+                                key={image.id}
+                                src={image.url}
+                                alt={image.altDescription}
+                                onClick={() => handleOnClick(image.id)}
+                                tags={image.tags}
+                            />
+                        );
+                    })}
+                </div>
+            ) : photosSearchStatus === 'fulfilled' && imageSearchResults.length === 0 ? (
+                <div className="text-3xl font-medium flex flex-col items-center p-6">
+                    <div>
+                        <FontAwesomeIcon icon={faImages} className="text-green-700" />
+                    </div>
+                    <div>No photos</div>
+                </div>
+            ) : null}
+
+            {photosSearchStatus === 'rejected' ? (
+                <div className="text-2xl font-medium">
+                    Something went wrong... <FontAwesomeIcon icon={faFrown} className="text-green-700" />
+                </div>
+            ) : null}
             {currentOpenImage ? (
                 <Modal
                     isOpen
